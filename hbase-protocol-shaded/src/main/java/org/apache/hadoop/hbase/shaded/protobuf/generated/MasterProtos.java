@@ -64879,7 +64879,7 @@ public final class MasterProtos {
        * <code>optional .hbase.pb.SpaceLimitRequest space_limit = 8;</code>
        */
       private org.apache.hadoop.hbase.shaded.com.google.protobuf.SingleFieldBuilderV3<
-          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.SpaceLimitRequest, org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.SpaceLimitRequest.Builder, org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.SpaceLimitRequestOrBuilder> 
+          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.SpaceLimitRequest, org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.SpaceLimitRequest.Builder, org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.SpaceLimitRequestOrBuilder>
           getSpaceLimitFieldBuilder() {
         if (spaceLimitBuilder_ == null) {
           spaceLimitBuilder_ = new org.apache.hadoop.hbase.shaded.com.google.protobuf.SingleFieldBuilderV3<
@@ -72296,7 +72296,7 @@ public final class MasterProtos {
 
       /**
        * <pre>
-       ** Fetches the Master's view of space utilization 
+       ** Fetches the Master's view of space utilization
        * </pre>
        *
        * <code>rpc GetSpaceQuotaRegionSizes(.hbase.pb.GetSpaceQuotaRegionSizesRequest) returns (.hbase.pb.GetSpaceQuotaRegionSizesResponse);</code>
@@ -72308,7 +72308,7 @@ public final class MasterProtos {
 
       /**
        * <pre>
-       ** Fetches the Master's view of quotas 
+       ** Fetches the Master's view of quotas
        * </pre>
        *
        * <code>rpc GetQuotaStates(.hbase.pb.GetQuotaStatesRequest) returns (.hbase.pb.GetQuotaStatesResponse);</code>
@@ -74284,7 +74284,7 @@ public final class MasterProtos {
 
     /**
      * <pre>
-     ** Fetches the Master's view of space utilization 
+     ** Fetches the Master's view of space utilization
      * </pre>
      *
      * <code>rpc GetSpaceQuotaRegionSizes(.hbase.pb.GetSpaceQuotaRegionSizesRequest) returns (.hbase.pb.GetSpaceQuotaRegionSizesResponse);</code>
@@ -74296,7 +74296,7 @@ public final class MasterProtos {
 
     /**
      * <pre>
-     ** Fetches the Master's view of quotas 
+     ** Fetches the Master's view of quotas
      * </pre>
      *
      * <code>rpc GetQuotaStates(.hbase.pb.GetQuotaStatesRequest) returns (.hbase.pb.GetQuotaStatesResponse);</code>
