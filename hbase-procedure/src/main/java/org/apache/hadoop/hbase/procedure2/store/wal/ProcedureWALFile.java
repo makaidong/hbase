@@ -26,6 +26,7 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.classification.InterfaceAudience;
 import org.apache.hadoop.hbase.classification.InterfaceStability;
 import org.apache.hadoop.hbase.procedure2.store.ProcedureStoreTracker;
@@ -157,7 +158,18 @@ public class ProcedureWALFile implements Comparable<ProcedureWALFile> {
 
   public void removeFile() throws IOException {
     close();
-    fs.delete(logFile, false);
+    // TODO: FIX THIS. MAKE THIS ARCHIVE FORMAL.
+    Path archiveDir =
+        new Path(logFile.getParent().getParent(), HConstants.HFILE_ARCHIVE_DIRECTORY);
+    try {
+      fs.mkdirs(archiveDir);
+    } catch (IOException ioe) {
+      LOG.warn("Making " + archiveDir, ioe);
+    }
+    Path archivedFile = new Path(archiveDir, logFile.getName());
+    LOG.info("ARCHIVED WAL (FIX) " + logFile + " to " + archivedFile);
+    fs.rename(logFile, archivedFile);
+    // fs.delete(logFile, false);
   }
 
   public void setProcIds(long minId, long maxId) {
