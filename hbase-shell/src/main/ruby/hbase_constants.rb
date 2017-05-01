@@ -82,6 +82,7 @@ module HBaseConstants
   CONFIG = 'CONFIG'
   DATA = 'DATA'
   POLICY = 'POLICY'
+  REGIONSERVER = 'REGIONSERVER'
 
   # Load constants from hbase java API
   def self.promote_constants(constants)

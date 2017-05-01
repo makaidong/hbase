@@ -24914,18 +24914,6 @@ public final class AdminProtos {
           org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsRequest request,
           org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse> done);
 
-      /**
-       * <pre>
-       ** Fetches the RegionServer's space quota active enforcements
-       * </pre>
-       *
-       * <code>rpc GetSpaceQuotaEnforcements(.hbase.pb.GetSpaceQuotaEnforcementsRequest) returns (.hbase.pb.GetSpaceQuotaEnforcementsResponse);</code>
-       */
-      public abstract void getSpaceQuotaEnforcements(
-          org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcController controller,
-          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest request,
-          org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse> done);
-
     }
 
     public static org.apache.hadoop.hbase.shaded.com.google.protobuf.Service newReflectiveService(
@@ -25083,14 +25071,6 @@ public final class AdminProtos {
           impl.getSpaceQuotaSnapshots(controller, request, done);
         }
 
-        @java.lang.Override
-        public  void getSpaceQuotaEnforcements(
-            org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcController controller,
-            org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest request,
-            org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse> done) {
-          impl.getSpaceQuotaEnforcements(controller, request, done);
-        }
-
       };
     }
 
@@ -25151,8 +25131,6 @@ public final class AdminProtos {
               return impl.getRegionLoad(controller, (org.apache.hadoop.hbase.shaded.protobuf.generated.AdminProtos.GetRegionLoadRequest)request);
             case 18:
               return impl.getSpaceQuotaSnapshots(controller, (org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsRequest)request);
-            case 19:
-              return impl.getSpaceQuotaEnforcements(controller, (org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest)request);
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -25205,8 +25183,6 @@ public final class AdminProtos {
               return org.apache.hadoop.hbase.shaded.protobuf.generated.AdminProtos.GetRegionLoadRequest.getDefaultInstance();
             case 18:
               return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsRequest.getDefaultInstance();
-            case 19:
-              return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -25259,8 +25235,6 @@ public final class AdminProtos {
               return org.apache.hadoop.hbase.shaded.protobuf.generated.AdminProtos.GetRegionLoadResponse.getDefaultInstance();
             case 18:
               return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse.getDefaultInstance();
-            case 19:
-              return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse.getDefaultInstance();
             default:
               throw new java.lang.AssertionError("Can't get here.");
           }
@@ -25425,18 +25399,6 @@ public final class AdminProtos {
         org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsRequest request,
         org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse> done);
 
-    /**
-     * <pre>
-     ** Fetches the RegionServer's space quota active enforcements
-     * </pre>
-     *
-     * <code>rpc GetSpaceQuotaEnforcements(.hbase.pb.GetSpaceQuotaEnforcementsRequest) returns (.hbase.pb.GetSpaceQuotaEnforcementsResponse);</code>
-     */
-    public abstract void getSpaceQuotaEnforcements(
-        org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcController controller,
-        org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest request,
-        org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse> done);
-
     public static final
         org.apache.hadoop.hbase.shaded.com.google.protobuf.Descriptors.ServiceDescriptor
         getDescriptor() {
@@ -25554,11 +25516,6 @@ public final class AdminProtos {
             org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcUtil.<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse>specializeCallback(
               done));
           return;
-        case 19:
-          this.getSpaceQuotaEnforcements(controller, (org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest)request,
-            org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcUtil.<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse>specializeCallback(
-              done));
-          return;
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -25611,8 +25568,6 @@ public final class AdminProtos {
           return org.apache.hadoop.hbase.shaded.protobuf.generated.AdminProtos.GetRegionLoadRequest.getDefaultInstance();
         case 18:
           return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsRequest.getDefaultInstance();
-        case 19:
-          return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -25665,8 +25620,6 @@ public final class AdminProtos {
           return org.apache.hadoop.hbase.shaded.protobuf.generated.AdminProtos.GetRegionLoadResponse.getDefaultInstance();
         case 18:
           return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse.getDefaultInstance();
-        case 19:
-          return org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse.getDefaultInstance();
         default:
           throw new java.lang.AssertionError("Can't get here.");
       }
@@ -25972,21 +25925,6 @@ public final class AdminProtos {
             org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse.class,
             org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse.getDefaultInstance()));
       }
-
-      public  void getSpaceQuotaEnforcements(
-          org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcController controller,
-          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest request,
-          org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse> done) {
-        channel.callMethod(
-          getDescriptor().getMethods().get(19),
-          controller,
-          request,
-          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse.getDefaultInstance(),
-          org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcUtil.generalizeCallback(
-            done,
-            org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse.class,
-            org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse.getDefaultInstance()));
-      }
     }
 
     public static BlockingInterface newBlockingStub(
@@ -26088,11 +26026,6 @@ public final class AdminProtos {
       public org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse getSpaceQuotaSnapshots(
           org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcController controller,
           org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsRequest request)
-          throws org.apache.hadoop.hbase.shaded.com.google.protobuf.ServiceException;
-
-      public org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse getSpaceQuotaEnforcements(
-          org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcController controller,
-          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest request)
           throws org.apache.hadoop.hbase.shaded.com.google.protobuf.ServiceException;
     }
 
@@ -26328,18 +26261,6 @@ public final class AdminProtos {
           controller,
           request,
           org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaSnapshotsResponse.getDefaultInstance());
-      }
-
-
-      public org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse getSpaceQuotaEnforcements(
-          org.apache.hadoop.hbase.shaded.com.google.protobuf.RpcController controller,
-          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsRequest request)
-          throws org.apache.hadoop.hbase.shaded.com.google.protobuf.ServiceException {
-        return (org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse) channel.callBlockingMethod(
-          getDescriptor().getMethods().get(19),
-          controller,
-          request,
-          org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos.GetSpaceQuotaEnforcementsResponse.getDefaultInstance());
       }
 
     }
@@ -26623,7 +26544,7 @@ public final class AdminProtos {
       "adRequest\022\'\n\ntable_name\030\001 \001(\0132\023.hbase.pb" +
       ".TableName\"C\n\025GetRegionLoadResponse\022*\n\014r" +
       "egion_loads\030\001 \003(\0132\024.hbase.pb.RegionLoad2" +
-      "\346\r\n\014AdminService\022P\n\rGetRegionInfo\022\036.hbas" +
+      "\360\014\n\014AdminService\022P\n\rGetRegionInfo\022\036.hbas" +
       "e.pb.GetRegionInfoRequest\032\037.hbase.pb.Get" +
       "RegionInfoResponse\022M\n\014GetStoreFile\022\035.hba",
       "se.pb.GetStoreFileRequest\032\036.hbase.pb.Get" +
@@ -26664,12 +26585,9 @@ public final class AdminProtos {
       "GetRegionLoadResponse\022k\n\026GetSpaceQuotaSn" +
       "apshots\022\'.hbase.pb.GetSpaceQuotaSnapshot" +
       "sRequest\032(.hbase.pb.GetSpaceQuotaSnapsho" +
-      "tsResponse\022t\n\031GetSpaceQuotaEnforcements\022" +
-      "*.hbase.pb.GetSpaceQuotaEnforcementsRequ",
-      "est\032+.hbase.pb.GetSpaceQuotaEnforcements" +
-      "ResponseBH\n1org.apache.hadoop.hbase.shad" +
-      "ed.protobuf.generatedB\013AdminProtosH\001\210\001\001\240" +
-      "\001\001"
+      "tsResponseBH\n1org.apache.hadoop.hbase.sh" +
+      "aded.protobuf.generatedB\013AdminProtosH\001\210\001",
+      "\001\240\001\001"
     };
     org.apache.hadoop.hbase.shaded.com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new org.apache.hadoop.hbase.shaded.com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
