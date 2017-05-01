@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.classification.InterfaceAudience;
 import org.apache.hadoop.hbase.classification.InterfaceStability;
 import org.apache.hadoop.hbase.exceptions.TimeoutIOException;
@@ -43,21 +45,24 @@ import com.google.common.annotations.VisibleForTesting;
  * execute() is called each time the procedure is executed.
  * it may be called multiple times in case of failure and restart, so the
  * code must be idempotent.
- * the return is a set of sub-procedures or null in case the procedure doesn't
+ *
+ * <p>The return is a set of sub-procedures or null in case the procedure doesn't
  * have sub-procedures. Once the sub-procedures are successfully completed
  * the execute() method is called again, you should think at it as a stack:
+ * <pre>
  *  -&gt; step 1
  *  ---&gt; step 2
  *  -&gt; step 1
- *
- * rollback() is called when the procedure or one of the sub-procedures is failed.
- * the rollback step is supposed to cleanup the resources created during the
- * execute() step. in case of failure and restart rollback() may be called
- * multiple times, so the code must be idempotent.
+ * </pre>
+ * <p>rollback() is called when the procedure or one of the sub-procedures
+ * has failed. the rollback step is supposed to cleanup the resources created
+ * during the execute() step. in case of failure and restart rollback() may be
+ * called multiple times, so again the code must be idempotent.
  */
 @InterfaceAudience.Private
 @InterfaceStability.Evolving
 public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
+  private static final Log LOG = LogFactory.getLog(Procedure.class);
   public static final long NO_PROC_ID = -1;
   protected static final int NO_TIMEOUT = -1;
 
@@ -275,11 +280,11 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
   protected StringBuilder toStringSimpleSB() {
     final StringBuilder sb = new StringBuilder();
 
-    sb.append("procId=");
+    sb.append("pid=");
     sb.append(getProcId());
 
     if (hasParent()) {
-      sb.append(", parentProcId=");
+      sb.append(", ppid=");
       sb.append(getParentProcId());
     }
 
@@ -288,14 +293,14 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
       sb.append(getOwner());
     }
 
-    sb.append(", state=");
+    sb.append(", procState=");
     toStringState(sb);
 
     if (hasException()) {
       sb.append(", exception=" + getException());
     }
 
-    sb.append(", ");
+    sb.append("; ");
     toStringClassDetails(sb);
 
     return sb;
@@ -344,7 +349,7 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
    * @param builder the string builder to use to append the proc specific information
    */
   protected void toStringClassDetails(StringBuilder builder) {
-    builder.append(getClass().getName());
+    builder.append(getClass().getSimpleName());
   }
 
   // ==========================================================================
@@ -648,6 +653,10 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
   @InterfaceAudience.Private
   protected synchronized void setChildrenLatch(final int numChildren) {
     this.childrenLatch = numChildren;
+    if (LOG.isTraceEnabled()) {
+      LOG.info("CHILD LATCH INCREMENT SET " +
+          this.childrenLatch, new Throwable(this.toString()));
+    }
   }
 
   /**
@@ -657,15 +666,34 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
   protected synchronized void incChildrenLatch() {
     // TODO: can this be inferred from the stack? I think so...
     this.childrenLatch++;
+    if (LOG.isTraceEnabled()) {
+      LOG.info("CHILD LATCH INCREMENT " + this.childrenLatch, new Throwable(this.toString()));
+    }
   }
 
   /**
    * Called by the ProcedureExecutor to notify that one of the sub-procedures has completed.
    */
   @InterfaceAudience.Private
-  protected synchronized boolean childrenCountDown() {
+  private synchronized boolean childrenCountDown() {
     assert childrenLatch > 0: this;
-    return --childrenLatch == 0;
+    boolean b = --childrenLatch == 0;
+    if (LOG.isTraceEnabled()) {
+      LOG.info("CHILD LATCH DECREMENT " + childrenLatch, new Throwable(this.toString()));
+    }
+    return b;
+  }
+
+  /**
+   * Try to set this procedure into RUNNABLE state.
+   * Succeeds if all subprocedures/children are done.
+   * @return True if we were able to move procedure to RUNNABLE state.
+   */
+  synchronized boolean tryRunnable() {
+    // Don't use isWaiting in the below; it returns true for WAITING and WAITING_TIMEOUT
+    boolean b = getState() == ProcedureState.WAITING && childrenCountDown();
+    if (b) setState(ProcedureState.RUNNABLE);
+    return b;
   }
 
   @InterfaceAudience.Private
@@ -732,6 +760,8 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
 
   /**
    * Internal method called by the ProcedureExecutor that starts the user-level code execute().
+   * @throws ProcedureSuspendedException This is used when procedure wants to halt processing and
+   * skip out without changing states or releasing any locks held.
    */
   @InterfaceAudience.Private
   protected Procedure[] doExecute(final TEnvironment env)

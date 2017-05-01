@@ -325,6 +325,7 @@ public class HRegionFileSystem {
           continue;
         }
         if(StoreFileInfo.isReference(stat.getPath())) {
+          if (LOG.isTraceEnabled()) LOG.trace("Reference " + stat.getPath());
           return true;
         }
       }

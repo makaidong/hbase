@@ -1200,7 +1200,12 @@ public class MasterProcedureScheduler extends AbstractProcedureScheduler {
     */
   @VisibleForTesting
   public String dumpLocks() throws IOException {
-    // TODO: Refactor so we stream out locks for case when millions; i.e. take a PrintWriter
-    return this.locking.toString();
+    schedLock();
+    try {
+      // TODO: Refactor so we stream out locks for case when millions; i.e. take a PrintWriter
+      return this.locking.toString();
+    } finally {
+      schedUnlock();
+    }
   }
 }

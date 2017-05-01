@@ -43,6 +43,7 @@ import org.apache.hadoop.hbase.backup.HFileArchiver;
 import org.apache.hadoop.hbase.classification.InterfaceAudience;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.master.assignment.AssignmentManager;
 import org.apache.hadoop.hbase.favored.FavoredNodesManager;
 import org.apache.hadoop.hbase.regionserver.HRegionFileSystem;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -112,10 +113,13 @@ public class CatalogJanitor extends ScheduledChore {
           && !this.services.isInMaintenanceMode()
           && am != null
           && am.isFailoverCleanupDone()
-          && am.getRegionStates().getRegionsInTransition().isEmpty()) {
+          && !am.hasRegionsInTransition()) {
         scan();
       } else {
-        LOG.warn("CatalogJanitor disabled! Not running scan.");
+        LOG.warn("CatalogJanitor disabled! enabled=" + this.enabled.get() +
+            ", maintenanceMode=" + this.services.isInMaintenanceMode() +
+            ", am=" + am + ", failoverCleanupDone=" + (am != null && am.isFailoverCleanupDone()) +
+            ", hasRIT=" + (am != null && am.hasRegionsInTransition()));
       }
     } catch (IOException e) {
       LOG.warn("Failed scan of catalog table", e);
@@ -167,6 +171,7 @@ public class CatalogJanitor extends ScheduledChore {
           // Another table, stop scanning
           return false;
         }
+        if (LOG.isTraceEnabled()) LOG.trace("" + info + " IS-SPLIT_PARENT=" + info.isSplitParent());
         if (info.isSplitParent()) splitParents.put(info, r);
         if (r.getValue(HConstants.CATALOG_FAMILY, HConstants.MERGEA_QUALIFIER) != null) {
           mergedRegions.put(info, r);
@@ -347,8 +352,7 @@ public class CatalogJanitor extends ScheduledChore {
     // Check whether it is a merged region and not clean reference
     // No necessary to check MERGEB_QUALIFIER because these two qualifiers will
     // be inserted/deleted together
-    if (rowContent.getValue(HConstants.CATALOG_FAMILY,
-        HConstants.MERGEA_QUALIFIER) != null) {
+    if (rowContent.getValue(HConstants.CATALOG_FAMILY, HConstants.MERGEA_QUALIFIER) != null) {
       // wait cleaning merge region first
       return result;
     }
@@ -362,6 +366,12 @@ public class CatalogJanitor extends ScheduledChore {
       FileSystem fs = this.services.getMasterFileSystem().getFileSystem();
       if (LOG.isTraceEnabled()) LOG.trace("Archiving parent region: " + parent);
       HFileArchiver.archiveRegion(this.services.getConfiguration(), fs, parent);
+      AssignmentManager am = this.services.getAssignmentManager();
+      if (am != null) {
+        if (am.getRegionStates() != null) {
+          am.getRegionStates().deleteRegion(parent);
+        }
+      }
       MetaTableAccessor.deleteRegion(this.connection, parent);
       services.getServerManager().removeRegion(parent);
       FavoredNodesManager fnm = this.services.getFavoredNodesManager();

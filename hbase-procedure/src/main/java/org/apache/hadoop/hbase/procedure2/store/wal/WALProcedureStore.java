@@ -292,9 +292,9 @@ public class WALProcedureStore extends ProcedureStoreBase {
   }
 
   @Override
-  public void setRunningProcedureCount(final int count) {
-    LOG.debug("Set running procedure count=" + count + ", slots=" + slots.length);
+  public int setRunningProcedureCount(final int count) {
     this.runningProcCount = count > 0 ? Math.min(count, slots.length) : slots.length;
+    return this.runningProcCount;
   }
 
   public ProcedureStoreTracker getStoreTracker() {

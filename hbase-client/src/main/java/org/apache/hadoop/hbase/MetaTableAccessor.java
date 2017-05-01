@@ -1966,8 +1966,8 @@ public class MetaTableAccessor {
    * @param regionsInfo list of regions to be deleted from META
    * @throws IOException
    */
-  public static void deleteRegions(Connection connection,
-                                   List<HRegionInfo> regionsInfo, long ts) throws IOException {
+  public static void deleteRegions(Connection connection, List<HRegionInfo> regionsInfo, long ts)
+  throws IOException {
     List<Delete> deletes = new ArrayList<>(regionsInfo.size());
     for (HRegionInfo hri: regionsInfo) {
       Delete e = new Delete(hri.getRegionName());
@@ -2002,10 +2002,10 @@ public class MetaTableAccessor {
     }
     mutateMetaTable(connection, mutation);
     if (regionsToRemove != null && regionsToRemove.size() > 0) {
-      LOG.debug("Deleted " + regionsToRemove);
+      LOG.debug("Deleted " + HRegionInfo.getShortNameToLog(regionsToRemove));
     }
     if (regionsToAdd != null && regionsToAdd.size() > 0) {
-      LOG.debug("Added " + regionsToAdd);
+      LOG.debug("Added " + HRegionInfo.getShortNameToLog(regionsToAdd));
     }
   }
 
