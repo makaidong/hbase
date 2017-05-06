@@ -151,7 +151,7 @@ public class MasterProcedureEnv implements ConfigurationObserver {
   }
 
   public boolean waitInitialized(Procedure proc) {
-    return procSched.waitEvent(((HMaster)master).getInitializedEvent(), proc);
+    return procSched.waitEvent(master.getInitializedEvent(), proc);
   }
 
   public boolean waitServerCrashProcessingEnabled(Procedure proc) {

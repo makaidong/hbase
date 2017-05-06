@@ -33,7 +33,6 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.RegionReplicaUtil;
 import org.apache.hadoop.hbase.master.MasterServices;
 import org.apache.hadoop.hbase.master.MasterWalManager;
-import org.apache.hadoop.hbase.master.RegionState;
 import org.apache.hadoop.hbase.master.assignment.AssignProcedure;
 import org.apache.hadoop.hbase.master.assignment.AssignmentManager;
 import org.apache.hadoop.hbase.master.assignment.RegionTransitionProcedure;
@@ -44,7 +43,6 @@ import org.apache.hadoop.hbase.shaded.protobuf.ProtobufUtil;
 import org.apache.hadoop.hbase.shaded.protobuf.generated.HBaseProtos.RegionInfo;
 import org.apache.hadoop.hbase.shaded.protobuf.generated.MasterProcedureProtos;
 import org.apache.hadoop.hbase.shaded.protobuf.generated.MasterProcedureProtos.ServerCrashState;
-import org.apache.hadoop.util.StringUtils;
 
 /**
  * Handle crashed server. This is a port to ProcedureV2 of what used to be euphemistically called
@@ -115,20 +113,11 @@ implements ServerProcedureInterface {
     super();
   }
 
-  private void throwProcedureYieldException(final String msg) throws ProcedureYieldException {
-    String logMsg = msg + "; cycle=" + this.cycles + ", running for " +
-        StringUtils.formatTimeDiff(System.currentTimeMillis(), getSubmittedTime());
-    // The procedure executor logs ProcedureYieldException at trace level. For now, log these
-    // yields for server crash processing at DEBUG. Revisit when stable.
-    if (LOG.isDebugEnabled()) LOG.debug(logMsg);
-    throw new ProcedureYieldException(logMsg);
-  }
-
   @Override
   protected Flow executeFromState(MasterProcedureEnv env, ServerCrashState state)
       throws ProcedureSuspendedException, ProcedureYieldException {
     if (LOG.isTraceEnabled()) {
-      LOG.trace(state  + " " + this);
+      LOG.trace(state  + " " + this + "; cycles=" + this.cycles);
     }
     // Keep running count of cycles
     if (state.ordinal() != this.previousState) {
@@ -192,7 +181,8 @@ implements ServerProcedureInterface {
         if (filterDefaultMetaRegions(regionsOnCrashedServer)) {
           if (LOG.isTraceEnabled()) {
             LOG.trace("Assigning regions " +
-              HRegionInfo.getShortNameToLog(regionsOnCrashedServer) + ", " + this);
+              HRegionInfo.getShortNameToLog(regionsOnCrashedServer) + ", " + this +
+              "; cycles=" + this.cycles);
           }
           handleRIT(env, regionsOnCrashedServer);
           addChildProcedure(env.getAssignmentManager().
@@ -209,7 +199,7 @@ implements ServerProcedureInterface {
         throw new UnsupportedOperationException("unhandled state=" + state);
       }
     } catch (IOException e) {
-      LOG.warn("Failed state=" + state + ", retry " + this, e);
+      LOG.warn("Failed state=" + state + ", retry " + this + "; cycles=" + this.cycles, e);
     }
     return Flow.HAS_MORE_STATE;
   }

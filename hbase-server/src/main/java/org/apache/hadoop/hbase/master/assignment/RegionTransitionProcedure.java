@@ -104,7 +104,7 @@ public abstract class RegionTransitionProcedure
     sb.append(getTableName());
     sb.append(", region=");
     sb.append(getRegionInfo() == null? null: getRegionInfo().getEncodedName());
-    sb.append(", server=");
+    sb.append(", tgt=");
     sb.append(getServer());
   }
 
@@ -178,13 +178,18 @@ public abstract class RegionTransitionProcedure
   protected void reportTransition(final MasterProcedureEnv env, final ServerName serverName,
       final TransitionCode code, final long seqId) throws UnexpectedStateException {
     final RegionStateNode regionNode = getRegionState(env);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Received report " + code + " seqId=" + seqId + ", " +
+            this + "; " + regionNode.toShortString());
+    }
     if (!serverName.equals(regionNode.getRegionLocation())) {
       if (isMeta() && regionNode.getRegionLocation() == null) {
         regionNode.setRegionLocation(serverName);
       } else {
         throw new UnexpectedStateException(String.format(
-          "reported unexpected transition state=%s from server=%s on region=%s, expected server=%s",
-          code, serverName, regionNode.getRegionInfo(), regionNode.getRegionLocation()));
+          "Unexpected state=%s from server=%s; expected server=%s; %s; %s",
+          code, serverName, regionNode.getRegionLocation(),
+          this, regionNode.toShortString()));
       }
     }
 

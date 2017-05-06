@@ -42,11 +42,14 @@ import org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv;
 import org.apache.hadoop.hbase.master.snapshot.SnapshotManager;
 import org.apache.hadoop.hbase.procedure.MasterProcedureManagerHost;
 import org.apache.hadoop.hbase.procedure2.LockInfo;
+import org.apache.hadoop.hbase.procedure2.ProcedureEvent;
 import org.apache.hadoop.hbase.procedure2.ProcedureExecutor;
 import org.apache.hadoop.hbase.quotas.MasterQuotaManager;
 import org.apache.hadoop.hbase.replication.ReplicationException;
 import org.apache.hadoop.hbase.replication.ReplicationPeerConfig;
 import org.apache.hadoop.hbase.replication.ReplicationPeerDescription;
+
+import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.Service;
 
 /**
@@ -123,6 +126,12 @@ public interface MasterServices extends Server {
    * @return Master's instance of {@link ProcedureExecutor}
    */
   ProcedureExecutor<MasterProcedureEnv> getMasterProcedureExecutor();
+
+  /**
+   * @return Tripped when Master has finished initialization.
+   */
+  @VisibleForTesting
+  public ProcedureEvent getInitializedEvent();
 
   /**
    * Check table is modifiable; i.e. exists and is offline.

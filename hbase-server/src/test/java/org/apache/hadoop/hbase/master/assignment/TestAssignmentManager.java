@@ -48,6 +48,7 @@ import org.apache.hadoop.hbase.NotServingRegionException;
 import org.apache.hadoop.hbase.ServerName;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.RetriesExhaustedException;
+import org.apache.hadoop.hbase.exceptions.UnexpectedStateException;
 import org.apache.hadoop.hbase.ipc.ServerNotRunningYetException;
 import org.apache.hadoop.hbase.master.MasterServices;
 import org.apache.hadoop.hbase.master.RegionState.State;
@@ -145,6 +146,37 @@ public class TestAssignmentManager {
   public void tearDown() throws Exception {
     master.stop("tearDown");
     this.executor.shutdownNow();
+  }
+
+  @Test (expected=NullPointerException.class)
+  public void testWaitServerReportEventWithNullServer() throws UnexpectedStateException {
+    // Test what happens if we pass in null server. I'd expect it throws NPE.
+    if (this.am.waitServerReportEvent(null, null)) throw new UnexpectedStateException();
+  }
+
+  @Test
+  public void testGoodSplit() throws Exception {
+    TableName tableName = TableName.valueOf(this.name.getMethodName());
+    HRegionInfo hri = new HRegionInfo(tableName, Bytes.toBytes(0), Bytes.toBytes(2), false, 0);
+    SplitTableRegionProcedure split =
+        new SplitTableRegionProcedure(this.master.getMasterProcedureExecutor().getEnvironment(),
+            hri, Bytes.toBytes(1));
+    rsDispatcher.setMockRsExecutor(new GoodSplitExecutor());
+    long st = System.currentTimeMillis();
+    Thread t = new Thread() {
+      public void run() {
+        try {
+          waitOnFuture(submitProcedure(split));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    };
+    t.start();
+    t.join();
+    long et = System.currentTimeMillis();
+    float sec = ((et - st) / 1000.0f);
+    LOG.info(String.format("[T] Splitting in %s", StringUtils.humanTimeDiff(et - st)));
   }
 
   @Test
@@ -681,5 +713,37 @@ public class TestAssignmentManager {
         return mockRsExec.sendRequest(serverName, request);
       }
     }
+  }
+
+  private class GoodSplitExecutor extends NoopRsExecutor {
+    
+    /*
+    @Override
+    protected RegionOpeningState execOpenRegion(ServerName server, RegionOpenInfo openReq)
+        throws IOException {
+      sendTransitionReport(server, openReq.getRegion(), TransitionCode.OPENED);
+      // Concurrency?
+      // Now update the state of our cluster in regionsToRegionServers.
+      SortedSet<byte []> regions = regionsToRegionServers.get(server);
+      if (regions == null) {
+        regions = new ConcurrentSkipListSet<byte[]>(Bytes.BYTES_COMPARATOR);
+        regionsToRegionServers.put(server, regions);
+      }
+      HRegionInfo hri = HRegionInfo.convert(openReq.getRegion());
+      if (regions.contains(hri.getRegionName())) {
+        throw new UnsupportedOperationException(hri.getRegionNameAsString());
+      }
+      regions.add(hri.getRegionName());
+      return RegionOpeningState.OPENED;
+    }
+
+    @Override
+    protected CloseRegionResponse execCloseRegion(ServerName server, byte[] regionName)
+        throws IOException {
+      HRegionInfo hri = am.getRegionInfo(regionName);
+      sendTransitionReport(server, HRegionInfo.convert(hri), TransitionCode.CLOSED);
+      return CloseRegionResponse.newBuilder().setClosed(true).build();
+    }*/
+    
   }
 }

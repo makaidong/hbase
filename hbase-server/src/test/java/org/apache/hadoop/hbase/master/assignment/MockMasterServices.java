@@ -194,15 +194,17 @@ public class MockMasterServices extends MockNoopMasterServices {
       super(master);
     }
 
+    @Override
     public void start() throws IOException {
     }
 
+    @Override
     public void stop() {
     }
 
-    public void updateRegionLocation(final HRegionInfo regionInfo, final State state,
-      final ServerName regionLocation, final ServerName lastHost, final long openSeqNum)
-      throws IOException {
+    @Override
+    public void updateRegionLocation(HRegionInfo regionInfo, State state, ServerName regionLocation,
+        ServerName lastHost, long openSeqNum, long pid) throws IOException {
     }
   }
 }

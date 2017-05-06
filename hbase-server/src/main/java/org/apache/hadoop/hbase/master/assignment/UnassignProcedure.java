@@ -177,9 +177,6 @@ public class UnassignProcedure extends RegionTransitionProcedure {
   @Override
   protected void reportTransition(final MasterProcedureEnv env, final RegionStateNode regionNode,
       final TransitionCode code, final long seqId) throws UnexpectedStateException {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Received report " + code + " " + this + "; " + regionNode.toShortString());
-    }
     switch (code) {
       case CLOSED:
         setTransitionState(RegionTransitionState.REGION_TRANSITION_FINISH);

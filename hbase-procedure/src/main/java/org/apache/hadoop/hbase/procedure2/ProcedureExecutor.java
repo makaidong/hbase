@@ -1162,7 +1162,7 @@ public class ProcedureExecutor<TEnvironment> {
       if (proc.isSuccess()) {
         // update metrics on finishing the procedure
         proc.updateMetricsOnFinish(getEnvironment(), proc.elapsedTime(), true);
-        LOG.info("Finished " + proc + " in " + StringUtils.humanTimeDiff(proc.elapsedTime()));
+        LOG.info("Finish " + proc + " in " + StringUtils.humanTimeDiff(proc.elapsedTime()));
         // Finalize the procedure state
         if (proc.getProcId() == rootProcId) {
           procedureFinished(proc);
@@ -1372,7 +1372,7 @@ public class ProcedureExecutor<TEnvironment> {
           subprocs = null;
         }
       } catch (ProcedureSuspendedException e) {
-        LOG.info("Suspended " + procedure);
+        LOG.info("Suspend " + procedure);
         suspended = true;
       } catch (ProcedureYieldException e) {
         if (LOG.isTraceEnabled()) {
@@ -1519,7 +1519,7 @@ public class ProcedureExecutor<TEnvironment> {
 
     // If this procedure is the last child awake the parent procedure
     if (LOG.isDebugEnabled()) {
-      LOG.debug("Finished suprocedure " + procedure);
+      LOG.debug("Finish suprocedure " + procedure);
     }
     if (parent.tryRunnable()) {
       // If we succeeded in making the parent runnable -- i.e. all of its
@@ -1639,7 +1639,7 @@ public class ProcedureExecutor<TEnvironment> {
           int runningCount = store.setRunningProcedureCount(activeCount);
           if (LOG.isDebugEnabled()) {
             LOG.debug("Run pid=" + procedure.getProcId() +
-                " current=" + runningCount + ", active=" + activeCount);
+                " runningCount=" + runningCount + ", activeCount=" + activeCount);
           }
           executionStartTime.set(EnvironmentEdgeManager.currentTime());
           try {
@@ -1652,7 +1652,7 @@ public class ProcedureExecutor<TEnvironment> {
             runningCount = store.setRunningProcedureCount(activeCount);
             if (LOG.isDebugEnabled()) {
               LOG.debug("Done pid=" + procedure.getProcId() +
-                  " current=" + runningCount + ", active=" + activeCount);
+                  " runningCount=" + runningCount + ", activeCount=" + activeCount);
             }
             lastUpdate = EnvironmentEdgeManager.currentTime();
             executionStartTime.set(Long.MAX_VALUE);

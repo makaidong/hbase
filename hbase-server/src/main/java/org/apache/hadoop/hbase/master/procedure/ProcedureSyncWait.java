@@ -138,7 +138,7 @@ public final class ProcedureSyncWait {
   public static byte[] waitForProcedureToComplete(
       final ProcedureExecutor<MasterProcedureEnv> procExec, final long procId, final long timeout)
       throws IOException {
-    waitFor(procExec.getEnvironment(), "procId=" + procId,
+    waitFor(procExec.getEnvironment(), "pid=" + procId,
       new ProcedureSyncWait.Predicate<Boolean>() {
         @Override
         public Boolean evaluate() throws IOException {
@@ -156,7 +156,7 @@ public final class ProcedureSyncWait {
       return result.getResult();
     } else {
       if (procExec.isRunning()) {
-        throw new IOException("Procedure " + procId + "not found");
+        throw new IOException("pid= " + procId + "not found");
       } else {
         throw new IOException("The Master is Aborting");
       }

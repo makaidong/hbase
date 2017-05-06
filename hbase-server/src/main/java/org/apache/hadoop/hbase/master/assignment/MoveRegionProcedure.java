@@ -61,6 +61,15 @@ public class MoveRegionProcedure
   }
 
   @Override
+  protected boolean holdLock(MasterProcedureEnv env) {
+    // Hold the lock for the duration of the move otherwise something like
+    // a call to split might come in when we do not hold the lock; i.e.
+    // at the point between completion of unassign and before we do the
+    // assign step (I've seen it in test).
+    return true;
+  }
+
+  @Override
   protected Flow executeFromState(final MasterProcedureEnv env, final MoveRegionState state)
       throws InterruptedException {
     if (LOG.isTraceEnabled()) {

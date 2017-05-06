@@ -172,7 +172,7 @@ public class AssignProcedure extends RegionTransitionProcedure {
       } else {
         // Try to 'retain' old assignment.
         retain = true;
-        regionNode.setRegionLocation(lastRegionLocation);
+        if (lastRegionLocation != null) regionNode.setRegionLocation(lastRegionLocation);
       }
     }
     LOG.info("Start " + this + "; " + regionNode.toShortString() +
@@ -212,6 +212,7 @@ public class AssignProcedure extends RegionTransitionProcedure {
           this /*Full detail on this procedure -- includes server name*/);
     }
     if (env.getAssignmentManager().waitServerReportEvent(regionNode.getRegionLocation(), this)) {
+      LOG.info("Early suspend! " + this + "; " + regionNode.toShortString());
       throw new ProcedureSuspendedException();
     }
 
@@ -245,10 +246,6 @@ public class AssignProcedure extends RegionTransitionProcedure {
   @Override
   protected void reportTransition(final MasterProcedureEnv env, final RegionStateNode regionNode,
       final TransitionCode code, final long openSeqNum) throws UnexpectedStateException {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Received report " + code + " openSeqNum=" + openSeqNum + ", " +
-            this + "; " + regionNode.toShortString());
-    }
     switch (code) {
       case OPENED:
         if (openSeqNum < 0) {

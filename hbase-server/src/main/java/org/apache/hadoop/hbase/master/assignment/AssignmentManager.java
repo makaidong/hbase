@@ -795,13 +795,13 @@ public class AssignmentManager implements ServerListener {
         }
       }
     } catch (PleaseHoldException e) {
-      LOG.debug("failed to transition: " + e.getMessage());
+      if (LOG.isTraceEnabled()) LOG.trace("Failed transition " + e.getMessage());
       throw e;
     } catch (UnsupportedOperationException|IOException e) {
       // TODO: at the moment we have a single error message and the RS will abort
-      // if the master says that one of the region transition failed.
-      LOG.warn("failed to transition: " + e.getMessage());
-      builder.setErrorMessage("failed to transition: " + e.getMessage());
+      // if the master says that one of the region transitions failed.
+      LOG.warn("Failed transition", e);
+      builder.setErrorMessage("Failed transition " + e.getMessage());
     }
     return builder.build();
   }
@@ -1231,7 +1231,7 @@ public class AssignmentManager implements ServerListener {
   }
 
   // TODO: the assumption here is that if RSs are crashing while we are executing this
-  // they will be handled by the SSH that will be putted in the ServerManager "queue".
+  // they will be handled by the SSH that are put in the ServerManager "queue".
   // we can integrate this a bit better.
   private boolean processofflineServersWithOnlineRegions() {
     boolean failover = !master.getServerManager().getDeadServers().isEmpty();

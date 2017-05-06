@@ -288,12 +288,14 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
       sb.append(getParentProcId());
     }
 
+    /**
+     * Enable later when this is being used.
     if (hasOwner()) {
       sb.append(", owner=");
       sb.append(getOwner());
-    }
+    }*/
 
-    sb.append(", procState=");
+    sb.append(", state=");
     toStringState(sb);
 
     if (hasException()) {

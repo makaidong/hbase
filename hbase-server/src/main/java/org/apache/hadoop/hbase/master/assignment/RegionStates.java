@@ -172,6 +172,9 @@ public class RegionStates {
     
     public ServerName setRegionLocation(final ServerName serverName) {
       ServerName lastRegionLocation = this.regionLocation;
+      if (serverName == null) {
+        LOG.debug("REMOVE tracking when we are set to null", new Throwable("DEBUG"));
+      }
       this.regionLocation = serverName;
       this.lastUpdate = EnvironmentEdgeManager.currentTime();
       return lastRegionLocation;

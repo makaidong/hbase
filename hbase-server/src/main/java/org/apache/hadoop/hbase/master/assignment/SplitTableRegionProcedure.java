@@ -42,7 +42,7 @@ import org.apache.hadoop.hbase.DoNotRetryIOException;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HRegionInfo;
-import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.client.TableDescriptor;
 import org.apache.hadoop.hbase.ServerName;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.classification.InterfaceAudience;
@@ -513,7 +513,7 @@ public class SplitTableRegionProcedure
     final List<Future<Pair<Path,Path>>> futures = new ArrayList<Future<Pair<Path,Path>>>(nbFiles);
 
     // Split each store file.
-    final HTableDescriptor htd = env.getMasterServices().getTableDescriptors().get(getTableName());
+    final TableDescriptor htd = env.getMasterServices().getTableDescriptors().get(getTableName());
     for (String family: regionFs.getFamilies()) {
       final HColumnDescriptor hcd = htd.getFamily(family.getBytes());
       final Collection<StoreFileInfo> storeFiles = regionFs.getStoreFiles(family);
@@ -714,7 +714,7 @@ public class SplitTableRegionProcedure
   }
 
   private int getRegionReplication(final MasterProcedureEnv env) throws IOException {
-    final HTableDescriptor htd = env.getMasterServices().getTableDescriptors().get(getTableName());
+    final TableDescriptor htd = env.getMasterServices().getTableDescriptors().get(getTableName());
     return htd.getRegionReplication();
   }
 

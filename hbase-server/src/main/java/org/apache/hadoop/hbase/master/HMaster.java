@@ -2624,6 +2624,7 @@ public class HMaster extends HRegionServer implements MasterServices {
     procedureExecutor.getEnvironment().setEventReady(initialized, isInitialized);
   }
 
+  @Override
   public ProcedureEvent getInitializedEvent() {
     return initialized;
   }

@@ -42,6 +42,7 @@ import org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv;
 import org.apache.hadoop.hbase.master.snapshot.SnapshotManager;
 import org.apache.hadoop.hbase.procedure.MasterProcedureManagerHost;
 import org.apache.hadoop.hbase.procedure2.LockInfo;
+import org.apache.hadoop.hbase.procedure2.ProcedureEvent;
 import org.apache.hadoop.hbase.procedure2.ProcedureExecutor;
 import org.apache.hadoop.hbase.quotas.MasterQuotaManager;
 import org.apache.hadoop.hbase.replication.ReplicationException;
@@ -438,5 +439,11 @@ public class MockNoopMasterServices implements MasterServices, Server {
   public long dispatchMergingRegions(HRegionInfo region_a, HRegionInfo region_b, boolean forcible, long nonceGroup,
       long nonce) throws IOException {
     return 0;
+  }
+
+  @Override
+  public ProcedureEvent getInitializedEvent() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
