@@ -1403,11 +1403,13 @@ public class ProcedureExecutor<TEnvironment> {
             reExecute = true;
             LOG.info("Short-circuit to rexecute for pid=" + procedure.getProcId());
           } else {
-            // yield the current procedure, and make the subprocedure runnable
+            // Yield the current procedure, and make the subprocedure runnable
+            // subprocs may come back 'null'.
             subprocs = initializeChildren(procStack, procedure, subprocs);
             LOG.info("Initialized subprocedures=" +
+              (subprocs == null? null:
                 Stream.of(subprocs).map(e -> "{" + e.toString() + "}").
-                collect(Collectors.toList()).toString());
+                collect(Collectors.toList()).toString()));
           }
         } else if (procedure.getState() == ProcedureState.WAITING_TIMEOUT) {
           if (LOG.isTraceEnabled()) {

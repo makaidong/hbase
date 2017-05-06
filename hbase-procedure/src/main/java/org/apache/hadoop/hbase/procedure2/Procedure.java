@@ -351,7 +351,7 @@ public abstract class Procedure<TEnvironment> implements Comparable<Procedure> {
    * @param builder the string builder to use to append the proc specific information
    */
   protected void toStringClassDetails(StringBuilder builder) {
-    builder.append(getClass().getSimpleName());
+    builder.append(getClass().getName());
   }
 
   // ==========================================================================
