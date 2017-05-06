@@ -983,7 +983,7 @@ public class AssignmentManager implements ServerListener {
       }
     } catch (UnexpectedStateException e) {
       final ServerName serverName = serverNode.getServerName();
-      LOG.warn("Killing " + serverName + ": " + e.getMessage());
+      LOG.warn("KILLING " + serverName + ": " + e.getMessage());
       killRegionServer(serverNode);
     }
   }
@@ -1003,25 +1003,23 @@ public class AssignmentManager implements ServerListener {
         synchronized (regionNode) {
           if (regionNode.isInState(State.OPENING, State.OPEN)) {
             if (!regionNode.getRegionLocation().equals(serverName)) {
-              throw new UnexpectedStateException(
-                "Reported OPEN on server=" + serverName +
-                " but state found says server=" + regionNode.getRegionLocation());
+              throw new UnexpectedStateException(regionNode.toString() +
+                "reported OPEN on server=" + serverName +
+                " but state has otherwise.");
             } else if (regionNode.isInState(State.OPENING)) {
               try {
                 if (!reportTransition(regionNode, serverNode, TransitionCode.OPENED, 0)) {
-                  LOG.warn("Reported OPEN on server=" + serverName +
-                    " but state found says " + regionNode + " and NO procedure is running");
+                  LOG.warn(regionNode.toString() + " reported OPEN on server=" + serverName +
+                    " but state has otherwise AND NO procedure is running");
                 }
               } catch (UnexpectedStateException e) {
-                LOG.warn("Unexpected exception while trying to report " + regionNode +
-                  " as open: " + e.getMessage(), e);
+                LOG.warn(regionNode.toString() + " reported unexpteced OPEN: " + e.getMessage(), e);
               }
             }
           } else if (!regionNode.isInState(State.CLOSING, State.SPLITTING)) {
             // TODO: We end up killing the RS if we get a report while we already
             // transitioned to close or split. we should have a timeout/timestamp to compare
-            throw new UnexpectedStateException(
-                "Reported OPEN but state found says " + regionNode.getState());
+            throw new UnexpectedStateException(regionNode.toString() + " reported unexpected OPEN");
           }
         }
       }
