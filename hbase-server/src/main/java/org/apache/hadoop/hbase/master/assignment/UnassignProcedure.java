@@ -156,8 +156,6 @@ public class UnassignProcedure extends RegionTransitionProcedure {
     env.getAssignmentManager().markRegionAsClosing(regionNode);
 
     // Add the close region operation the the server dispatch queue.
-    // The pending close will be dispatched to the server together with the other
-    // pending operation for that server.
     addToRemoteDispatcher(env, regionNode.getRegionLocation());
     return true;
   }

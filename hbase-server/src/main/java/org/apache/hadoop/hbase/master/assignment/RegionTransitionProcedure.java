@@ -153,7 +153,7 @@ public abstract class RegionTransitionProcedure
     env.getProcedureScheduler().wakeEvent(regionNode.getProcedureEvent());
   }
 
-  protected void addToRemoteDispatcher(final MasterProcedureEnv env,
+  protected boolean addToRemoteDispatcher(final MasterProcedureEnv env,
       final ServerName targetServer) {
     assert targetServer.equals(getRegionState(env).getRegionLocation()) :
       "targetServer=" + targetServer + " getRegionLocation=" +
@@ -161,18 +161,17 @@ public abstract class RegionTransitionProcedure
 
     LOG.info("Dispatch " + this + "; " + getRegionState(env).toShortString());
 
-    // Add the open/close region operation to the server dispatch queue.
-    // The pending open/close will be dispatched to the server together with the other
-    // pending operations (if any) for that server.
+    // Put this procedure into suspended mode to wait on report of state change
+    // from remote regionserver.
     env.getProcedureScheduler().suspendEvent(getRegionState(env).getProcedureEvent());
 
     if (!env.getRemoteDispatcher().addOperationToNode(targetServer, this)) {
-      // Failed add of operation. Call remoteCallFailed to do proper clean up since
-      // this thread was suspended above. If we unsuspend a suspended worker, there
-      // is danger two workers could end up processing a single Procedure instance.
+      // Undo the 'suspend' done above.
       remoteCallFailed(env, targetServer,
           new FailedRemoteDispatchException(this + " to " + targetServer));
+      return false;
     }
+    return true;
   }
 
   protected void reportTransition(final MasterProcedureEnv env, final ServerName serverName,

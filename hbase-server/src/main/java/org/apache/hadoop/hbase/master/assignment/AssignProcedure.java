@@ -221,16 +221,15 @@ public class AssignProcedure extends RegionTransitionProcedure {
       return false;
     }
 
-    // region is now in OPENING state
+    // Set OPENING in hbase:meta and add region to list of regions on server.
     env.getAssignmentManager().markRegionAsOpening(regionNode);
 
     // TODO: Requires a migration to be open by the RS?
     // regionNode.getFormatVersion()
 
-    // Add the open region operation to the server dispatch queue.
-    // The pending open will be dispatched to the server together with the other
-    // pending operation for that server.
     addToRemoteDispatcher(env, regionNode.getRegionLocation());
+    // We always return true, even if we fail dispatch because failiure sets
+    // state back to beginning so we retry assign.
     return true;
   }
 
@@ -279,6 +278,7 @@ public class AssignProcedure extends RegionTransitionProcedure {
     this.forceNewPlan = true;
     this.server = null;
     regionNode.offline();
+    env.getAssignmentManager().undoRegionAsOpening(regionNode);
     setTransitionState(RegionTransitionState.REGION_TRANSITION_QUEUE);
   }
 
@@ -302,7 +302,6 @@ public class AssignProcedure extends RegionTransitionProcedure {
   @Override
   protected void remoteCallFailed(final MasterProcedureEnv env, final RegionStateNode regionNode,
       final IOException exception) {
-    // TODO: put the server in the bad list?
     handleFailure(env, regionNode);
   }
 }

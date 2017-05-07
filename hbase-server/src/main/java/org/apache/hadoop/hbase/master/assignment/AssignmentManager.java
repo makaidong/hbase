@@ -1430,6 +1430,9 @@ public class AssignmentManager implements ServerListener {
     }
   }
 
+  /**
+   * @see #undoRegionAsOpening(RegionStateNode)
+   */
   public void markRegionAsOpening(final RegionStateNode regionNode) throws IOException {
     synchronized (regionNode) {
       State state = regionNode.transitionState(State.OPENING, RegionStates.STATES_EXPECTED_ON_OPEN);
@@ -1441,6 +1444,16 @@ public class AssignmentManager implements ServerListener {
 
     // update the operation count metrics
     metrics.incrementOperationCounter();
+  }
+
+  public void undoRegionAsOpening(final RegionStateNode regionNode) {
+    // TODO: Metrics. Do opposite of metrics.incrementOperationCounter();
+    synchronized (regionNode) {
+      if (regionNode.isInState(State.OPENING)) {
+        regionStates.addRegionToServer(regionNode.getRegionLocation(), regionNode);
+      }
+      // Should we update hbase:meta?
+    }
   }
 
   public void markRegionAsOpened(final RegionStateNode regionNode) throws IOException {

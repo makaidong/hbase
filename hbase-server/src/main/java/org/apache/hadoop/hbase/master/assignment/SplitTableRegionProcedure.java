@@ -243,7 +243,8 @@ public class SplitTableRegionProcedure
     } catch (IOException e) {
       // This will be retried. Unless there is a bug in the code,
       // this should be just a "temporary error" (e.g. network down)
-      LOG.warn("Failed rollback attempt step " + state + " for splitting the region "
+      LOG.warn("pid=" + getProcId() + " failed rollback attempt step " + state +
+          " for splitting the region "
         + parentHRI.getEncodedName() + " in table " + getTableName(), e);
       throw e;
     }
@@ -327,7 +328,8 @@ public class SplitTableRegionProcedure
 
     if (env.getProcedureScheduler().waitRegions(this, getTableName(), parentHRI)) {
       try {
-        LOG.debug(LockState.LOCK_EVENT_WAIT + " " + env.getProcedureScheduler().dumpLocks());
+        LOG.debug("pid=" + getProcId() + " failed acquire, returning " + LockState.LOCK_EVENT_WAIT +
+            " lock dump " + env.getProcedureScheduler().dumpLocks());
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -390,7 +392,7 @@ public class SplitTableRegionProcedure
     // since we have the lock and the master is coordinating the operation
     // we are always able to split the region
     if (!env.getMasterServices().isSplitOrMergeEnabled(MasterSwitchType.SPLIT)) {
-      LOG.warn("split switch is off! skip split of " + parentHRI);
+      LOG.warn("pid=" + getProcId() + " split switch is off! skip split of " + parentHRI);
       setFailure(new IOException("Split region " + parentHRI.getRegionNameAsString() +
           " failed due to split switch off"));
       return false;
@@ -506,8 +508,8 @@ public class SplitTableRegionProcedure
       conf.getInt(HConstants.REGION_SPLIT_THREADS_MAX,
         conf.getInt(HStore.BLOCKING_STOREFILES_KEY, HStore.DEFAULT_BLOCKING_STOREFILE_COUNT)),
       nbFiles);
-    LOG.info("Preparing to split " + nbFiles + " storefiles for region " + parentHRI +
-            " using " + maxThreads + " threads");
+    LOG.info("pid=" + getProcId() + " preparing to split " + nbFiles + " storefiles for region " +
+      parentHRI + " using " + maxThreads + " threads");
     final ExecutorService threadPool = Executors.newFixedThreadPool(
       maxThreads, Threads.getNamedThreadFactory("StoreFileSplitter-%1$d"));
     final List<Future<Pair<Path,Path>>> futures = new ArrayList<Future<Pair<Path,Path>>>(nbFiles);
@@ -565,7 +567,8 @@ public class SplitTableRegionProcedure
     }
 
     if (LOG.isDebugEnabled()) {
-      LOG.debug("Split storefiles for region " + parentHRI + " Daughter A: " + daughterA
+      LOG.debug("pid=" + getProcId() + " split storefiles for region " + parentHRI + " Daughter A: " +
+          daughterA
           + " storefiles, Daughter B: " + daughterB + " storefiles.");
     }
     return new Pair<Integer, Integer>(daughterA, daughterB);
@@ -582,7 +585,8 @@ public class SplitTableRegionProcedure
   private Pair<Path, Path> splitStoreFile(final HRegionFileSystem regionFs,
       final byte[] family, final StoreFile sf) throws IOException {
     if (LOG.isDebugEnabled()) {
-      LOG.debug("Splitting started for store file: " + sf.getPath() + " for region: " + parentHRI);
+      LOG.debug("pid=" + getProcId() + " splitting started for store file: " +
+          sf.getPath() + " for region: " + parentHRI);
     }
 
     final byte[] splitRow = getSplitRow();
@@ -592,7 +596,8 @@ public class SplitTableRegionProcedure
     final Path path_second =
         regionFs.splitStoreFile(this.daughter_2_HRI, familyName, sf, splitRow, true, null);
     if (LOG.isDebugEnabled()) {
-      LOG.debug("Splitting complete for store file: " + sf.getPath() + " for region: " + parentHRI);
+      LOG.debug("pid=" + getProcId() + " splitting complete for store file: " +
+          sf.getPath() + " for region: " + parentHRI);
     }
     return new Pair<Path,Path>(path_first, path_second);
   }
@@ -642,7 +647,8 @@ public class SplitTableRegionProcedure
           HRegionInfo.parseRegionName(p.getRow());
         }
       } catch (IOException e) {
-        LOG.error("Row key of mutation from coprocessor is not parsable as region name."
+        LOG.error("pid=" + getProcId() + " row key of mutation from coprocessor not parsable as "
+            + "region name."
             + "Mutations from coprocessor should only for hbase:meta table.");
         throw e;
       }
